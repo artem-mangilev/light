@@ -3,11 +3,11 @@ pub struct Url {
     pub path: String
 }
 
-pub fn parse(url: String) -> Option<Url> {
+pub fn parse(url: &str) -> Option<Url> {
     if url.starts_with("http://") {
-        let url_without_protocol = url.strip_prefix("http://");
+        let url_without_protocol = url.strip_prefix("http://").unwrap();
 
-        let split_result: Vec<&str> = url_without_protocol.unwrap().split("/").collect();
+        let split_result: Vec<&str> = url_without_protocol.split("/").collect();
 
         return Some(Url { 
             host: split_result[0].to_string(), 
