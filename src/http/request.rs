@@ -28,5 +28,6 @@ pub fn get(url: &str) -> String {
     let mut str_buffer = String::new();
     stream.read_to_string(&mut str_buffer).unwrap();
 
+
     return str_buffer;
 }
