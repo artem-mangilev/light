@@ -6,7 +6,11 @@ use dns_lookup::lookup_host;
 use crate::url::parser::{self};
 
 pub fn get(url: &str) -> String {
-    let url = parser::parse(url).unwrap();
+    let url = parser::parse(url);
+
+    println!("{}", url.host);
+    println!("{}", url.path);
+    println!("{}", url.protocol);
 
     let ip = lookup_host(&url.host).unwrap().first().unwrap().to_string();
     let ip_with_port = [&ip, ":", "80"].concat();
