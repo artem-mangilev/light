@@ -1,10 +1,11 @@
-use std::{collections::{HashMap}, io::{BufReader, BufRead}};
+use std::{collections::{HashMap}, io::{BufReader, BufRead, Read}};
 
 pub struct HttpResponse {
     pub headers: HashMap<String, String>,
     pub status: u16,
     pub status_explanation: String,
-    pub http_version: String
+    pub http_version: String,
+    pub body: String
 }
 
 pub fn parse(response: &String) -> HttpResponse {
@@ -33,10 +34,15 @@ pub fn parse(response: &String) -> HttpResponse {
         headers.insert(header, value);
     }
 
+    // handle body
+    let mut body = String::new();
+    reader.read_to_string(&mut body).unwrap();
+
     return HttpResponse {
         http_version: statusline_split[0].to_string(),
         status: statusline_split[1].parse().unwrap(),
         status_explanation: statusline_split[2].to_string(),
-        headers
+        headers,
+        body
     };
 }
