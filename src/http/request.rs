@@ -1,5 +1,5 @@
 
-use std::{net::TcpStream, io::{Write, Read}};
+use std::{net::TcpStream, io::{Write, Read}, collections::HashMap};
 
 use dns_lookup::lookup_host;
 
@@ -7,7 +7,8 @@ use crate::url::parser::{self};
 
 use super::response_parser::{self, HttpResponse};
 
-pub fn get(url: &str) -> HttpResponse {
+// TODO: add typings for headers
+pub fn get(url: &str, headers: Option<HashMap<&str, &str>>) -> HttpResponse {
     let url = parser::parse(url);
 
     let ip = lookup_host(&url.host).unwrap().first().unwrap().to_string();
@@ -18,13 +19,24 @@ pub fn get(url: &str) -> HttpResponse {
         Err(_) => panic!("Problem with connection")
     };
 
+    let mut internal_headers = match headers {
+        Some(h) => h,
+        None => HashMap::new()
+    };
 
-    let method = format!("GET {} HTTP/1.0\r\n", url.path);
-    let host = format!("Host: {}\r\n\r\n", url.host);
-    
+    // Default headers
+    internal_headers.insert("Host", &url.host);
+    internal_headers.insert("Connection", "close");
+    internal_headers.insert("User-Agent", "Light browser");
+
     let mut request = String::new();
-    request += &method;
-    request += &host;
+
+    request += &format!("GET {} HTTP/1.1\r\n", url.path);
+
+    for (key, value) in internal_headers.into_iter() {
+        request += &format!("{}: {}\r\n", key, value)
+    }
+    request += "\r\n";
 
     stream.write(request.as_bytes()).unwrap();
 
