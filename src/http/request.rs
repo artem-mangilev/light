@@ -5,7 +5,9 @@ use dns_lookup::lookup_host;
 
 use crate::url::parser::{self};
 
-pub fn get(url: &str) -> String {
+use super::response_parser::{self, HttpResponse};
+
+pub fn get(url: &str) -> HttpResponse {
     let url = parser::parse(url);
 
     let ip = lookup_host(&url.host).unwrap().first().unwrap().to_string();
@@ -30,5 +32,5 @@ pub fn get(url: &str) -> String {
     stream.read_to_string(&mut str_buffer).unwrap();
 
 
-    return str_buffer;
+    return response_parser::parse(&str_buffer);
 }

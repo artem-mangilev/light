@@ -2,10 +2,10 @@ mod url;
 pub mod http;
 mod renderer;
 
-use http::{request, response_parser::parse};
+use http::{request};
 
 fn main() {
-    let response = request::get("http://example.org/");
+    let response = request::get("http://example.org:8080/");
 
-    let parsed_response = parse(&response);
+    println!("{}", response.body);
 }
